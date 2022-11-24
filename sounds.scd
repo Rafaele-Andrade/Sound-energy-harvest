@@ -86,9 +86,9 @@ SynthDef(\crystalsounds,{
     }).add;
 };
 
-~audioOutBus = 0;
-x = Synth("\resTuning_%".format(0));
-x = Synth("\Capacitor_%".format(0));
+//~audioOutBus = 0;
+//x = Synth("\resTuning_%".format(0));
+//x = Synth("\Capacitor_%".format(0));
 
 SynthDef(\lorenz, {|startVal_0 = 20000, startVal_1 = 20000, envTime_0 = 10, envTime_1 = 10|
     var synth = LorenzL.ar(XLine.kr([startVal_1, startVal_1], 455, [envTime_0, envTime_1])) * 0.3;
@@ -96,11 +96,11 @@ SynthDef(\lorenz, {|startVal_0 = 20000, startVal_1 = 20000, envTime_0 = 10, envT
 }).add;
 
 SynthDef(\Capacitorempty,{
-	|freq =50, amp =0.05, speed = 0.23, add = 3|
+	|freq =50, amp =0.05, speed = 0.23, add = 3,gate =1 , attack = 0.001, release = 15|
 
 	var filter = LFTri.ar(speed,mul:amp);
 	var src = SinOsc.ar( freq:[freq, freq+add],mul:filter);
-
+	var env = EnvGen.kr(Env.adsr(attack, release, amp), gate: gate,doneAction: Done.freeSelf);
 	Out.ar([0,1], Mix.new(src));
 
 }).add;
@@ -109,11 +109,11 @@ SynthDef(\Capacitorempty,{
 
 
 SynthDef(\Lowgliss,{
-    |intervalo =0.4, amp =0.1, speed = 0.04, add = 100|
+    |intervalo =0.4, amp =0.1, speed = 0.04, add = 100, gate =1 , attack = 0.001, release = 1, glisstime = 5|
 
-    var src = LorenzL.ar(XLine.kr([1100,800],[222,230],5))*amp;
-
-    Out.ar([0,1], Compander.ar(Mix.ar(src),0,0.1));
+    var src = LorenzL.ar(XLine.kr([1100,800],[222,230],glisstime))*amp;
+	var env = EnvGen.kr(Env([0, 1, 0], [attack, release]), gate: gate,doneAction: Done.freeSelf);
+    Out.ar([0,1], Compander.ar(Mix.ar(src),0,0.1)*env);
 
 }).add;
 

@@ -111,7 +111,19 @@
 								Synth("crystalsounds", ["attack", 0.01 + 1.0.rand, "release", 2 + 15.rand, "noise", noiseAbsDynScale, \pulse, tBetweenTrigMean.sqrt.clip(0.2, 50) * 50  * noiseAbsDynScale.linlin(0, 1, 0.5, 1.5) ], target: ~synthGrp);},
 							3, {var rand = tBetweenTrig.clip(0.0001, 20).linlin(0.001, 20, 0, 0.1);
 								var randSign = [-1, 1].choose;
-								Synth("\resTuning_%".format(1), [\attack, 1 + (4.0).rand, \release, 1 + (15.0).rand, \coef, 0.001, \detune, 1  + (rand), \array, ~tuning[1].choose], target: ~synthGrp);},
+								Synth("\resTuning_%".format(1),
+									[
+										\attack, ~attack, //1 + (4.0).rand,
+										\release, ~release, //1 + (15.0).rand,
+										\beating, 7,
+										\coef,  0.001,
+										\array, ~array,
+										\pan, ~pan,
+										\iteration,~iter
+									]
+									, target: ~synthGrp);
+
+								;},
 						);
 
 

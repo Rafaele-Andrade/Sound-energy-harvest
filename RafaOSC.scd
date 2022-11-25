@@ -24,7 +24,7 @@
 	var noiseAbsDynScale = 0.5;
 	var harvestMax = 0;
 
-~rafaOSCFunc = { |msg, time, addr, recvPort|
+	~rafaOSCFunc = { |msg, time, addr, recvPort|
 		var adamID = 1;
 		if(recvPort == ~rafaOSCPort){ // If this is Rafa's's port
 
@@ -90,26 +90,37 @@
 							5, {~loFreqEnergy.set(\detune, 1.0, \maxSinFreq, 40 + 35.0.rand);},
 						);
 
-			};
-			if(msg[1] < schmittLowerThresh_2 && schmittState_2 == 1){
-				schmittState_2 = 0;
-			};
+					};
+					if(msg[1] < schmittLowerThresh_2 && schmittState_2 == 1){
+						schmittState_2 = 0;
+					};
 
-			tDiffVarMax = (tDiffVarMax - (tDiffVarMax * (timeDiff / 10))).clip(1, 400); // Taper off time difference maximum
+					tDiffVarMax = (tDiffVarMax - (tDiffVarMax * (timeDiff / 10))).clip(1, 400); // Taper off time difference maximum
 
-			/* Schmitt Trigger 1 */
-			if(msg[1] > schmittUpperThresh && schmittState == 0){
+					/* Schmitt Trigger 1 */
+					if(msg[1] > schmittUpperThresh && schmittState == 0){
 
 						/* Commands for scenes (triggered by Schmitt Trigger 1)*/
 
-					switch (~sceneIndex,
+						switch (~sceneIndex,
 							0, {},
 							1, {~capacitor_0.set(\speed, tDiffVarianceDynNorm.sqrt * 100);},
 							2, {~capacitor_0.set(\speed, tDiffVarianceDynNorm * 180);
 								Synth("crystalsounds", ["attack", 0.01 + 1.0.rand, "release", 2 + 15.rand, "noise", noiseAbsDynScale, \pulse, tBetweenTrigMean.sqrt.clip(0.2, 50) * 50  * noiseAbsDynScale.linlin(0, 1, 0.5, 1.5) ], target: ~synthGrp);},
-							3, {var rand = tBetweenTrig.clip(0.0001, 20).linlin(0.001, 20, 0, 0.1);
+							3, {
+								var rand = tBetweenTrig.clip(0.0001, 20).linlin(0.001, 20, 0, 0.1);
 								var randSign = [-1, 1].choose;
-								Synth("\resTuning_%".format(1), [\attack, 1 + (4.0).rand, \release, 1 + (15.0).rand, \coef, 0.001, \detune, 1  + (rand), \array, ~tuning[1].choose], target: ~synthGrp);},
+								Synth("\resTuning_%".format(1),
+									[
+										\attack, ~attack, //1 + (4.0).rand,
+										\release, ~release, //1 + (15.0).rand,
+										\beating, 7,
+										\coef,  0.001,
+										\array, ~array,
+										\pan, ~pan,
+										\iteration,~iter
+									]
+									, target: ~synthGrp);},
 						);
 
 
@@ -129,14 +140,14 @@
 			};
 		};
 	};
-thisProcess.addOSCRecvFunc(~rafaOSCFunc);
+	thisProcess.addOSCRecvFunc(~rafaOSCFunc);
 };
 
 /*~rafaBelaOSCFunc = { |msg, time, addr, recvPort|
 
-	if(recvPort == ~rafaBelaOSCPort){
-		msg.postln;
-	};
+if(recvPort == ~rafaBelaOSCPort){
+msg.postln;
+};
 
-	thisProcess.addOSCRecvFunc(~rafaBelaOSCFunc);
-	};*/
+thisProcess.addOSCRecvFunc(~rafaBelaOSCFunc);
+};*/

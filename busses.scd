@@ -1,5 +1,5 @@
 
-~makeBusses = {
+//~makeBusses = {
 	~audioInBus = ~numInChannels.collect{ |i| Bus.audio(s)};
 	~harvesterVal = 2.collect{Bus.control(s, 1).set(1)};
 	~rocBus = 2.collect{Bus.control(s, 1).set(1)};
@@ -14,4 +14,4 @@
 	~modFreq = 2.collect{Bus.control(s, 1).set(10)};
 	~modOsc = 2.collect{Bus.control(s, 1)};
 	~volCharge = 2.collect{Bus.control(s, 1)};
-};
+//};

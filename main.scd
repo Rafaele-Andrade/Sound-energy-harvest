@@ -11,6 +11,7 @@ s.plotTree;
 // ~myplace +/+ "connection-test.scd".openOS;              //for testing
 
 "serverconfig.scd".loadRelative;
+
 "busses.scd".loadRelative;
 "tuning.scd".loadRelative;
 "envelopes.scd".loadRelative;
@@ -23,40 +24,79 @@ s.plotTree;
 (
 
 /* neutral state */
+
 ~makeControllers = {
 	/* Button 1, neutral state */
 	MIDIFunc.noteOn({~sceneIndex = 0;
 		~synthGrp.set(\gate, 0);
 }, 1, 0, ~softStep);
 
+
+
 /* Scenes */
 
 	MIDIFunc.noteOn({~sceneIndex = 1;
 		~capacitor_0 = Synth(\Capacitor_0, target: ~synthGrp);
-	}, 6, 0, ~softStep);
+	}, 6, 0, ~softStep)
+	;
 	MIDIFunc.noteOff({
 	}, 6, 0, ~softStep);
+
+
 	MIDIFunc.noteOn({~sceneIndex = 2;
 	}, 7, 0, ~softStep);
-
 	MIDIFunc.noteOff({
 		~capacitor_0.set(\gate, 0);
 	}, 7, 0, ~softStep);
+
+
 	MIDIFunc.noteOn({~sceneIndex = 3;
+		fork{
+			~attack = 20;
+			~release = 30;
+			~array = 133;
+			~iter = rrand(1,1.2) ;
+			30.wait;
+			~array = ~tuning[1].choose;
+			30.wait;
+			~array = ~tuning[0].choose;
+			~iter = rrand(1.2,1.4);
+			30.wait;
+			~array = ~tuning[2].choose;
+			~pan = 0.001;
+			30.wait;
+			~pan = rrand(0.01,0.1);
+			10.wait;
+			~pan = rrand(4,19);
+		};
 	}, 8, 0, ~softStep);
 
-	MIDIFunc.noteOn({
+
+
+	MIDIFunc.noteOn({ ~sceneIndex = 4;
 		var rafaCharge = ~volCharge[0].getSynchronous;
 		var adamCharge = ~volCharge[1].getSynchronous;
-		~sceneIndex = 4;
-		"test_Lorenz".postln;
-		~lorenzSweep = Synth(\lorenz, [\startVal_0, rafaCharge, \startVal_1, adamCharge, \envTime_0, 10, \envTime_1, 20]);
-	}, 9, 0, ~softStep);
-	MIDIFunc.noteOff({
-		// ~lorenzSweep.gate(0);
+
+		//~lorenzSweep = Synth(\lorenz, [\startVal_0, rafaCharge, \startVal_1, adamCharge, \envTime_0, 10, \envTime_1, 20]);
+		fork{
+		~capacitorempty = Synth("Capacitorempty");
+		~lowgliss = Synth("Lowgliss", ["amp",1, "release",20]);
+
+		30.wait;
+
+		~capacitorempty.set("speed",0.15, "add",2.rand);
+
+		30.wait;
+		~capacitorempty.set("speed",0.1, "add",1.rand);
+		}
+
 	}, 9, 0, ~softStep);
 
-		MIDIFunc.noteOn({
+	MIDIFunc.noteOff({
+	}, 9, 0, ~softStep);
+
+
+	MIDIFunc.noteOn({
 		if(~sceneIndex != 5){
 			~loFreqEnergy = Synth("\loFreqEnergy_%".format(0), target: ~synthGrp);
 		};
@@ -81,15 +121,7 @@ s.plotTree;
 };
 
 
-~makeRoutines = {
-};
 
-~cleanup = {
-	s.newBusAllocators;
-	ServerBoot.removeAll;
-	ServerTree.removeAll;
-	ServerQuit.removeAll;
-};
 
 /* Synth hierarchy (for proper bus signal flow between synths) */
 ~makeNodes = {
@@ -104,6 +136,16 @@ s.plotTree;
 	});
 };
 
+
+
+)
+
+
+
+
+
+/*  dont really understand :P
+
 ServerBoot.add(~makeArrays);
 ServerBoot.add(~makeBusses);
 ServerBoot.add(~makeBuffers);
@@ -114,6 +156,18 @@ ServerBoot.add(~makeOSC);
 /*ServerBoot.add(~rafaBelaOSCFunc);*/
 ServerBoot.add(~makeControllers);
 ServerQuit.add(~cleanup);
+
+
+~makeRoutines = {
+};
+
+
+~cleanup = {
+	s.newBusAllocators;
+	ServerBoot.removeAll;
+	ServerTree.removeAll;
+	ServerQuit.removeAll;
+};
 
 s.waitForBoot({
 s.sync;
@@ -129,4 +183,5 @@ s.freeAll;
 s.sync;
 	"done".postln;
 });
-)
+
+*/

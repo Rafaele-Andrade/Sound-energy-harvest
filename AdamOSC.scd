@@ -108,9 +108,20 @@
 
 							/* Scene 3 */
 
-							3, {var rand = tBetweenTrig.clip(0.0001, 20).linlin(0.001, 20, 0, 0.1).postln;
+							3, {
+								var rand = tBetweenTrig.clip(0.0001, 20).linlin(0.001, 20, 0, 0.1);
 								var randSign = [-1, 1].choose;
-								Synth("\resTuning_%".format(0), [\attack, rrand(4,10.0), \release, rrand(6,15.0), \coef, 0.001, \freqMul, 2, \detune, 1 + (rand), \array, ~tuning[0].choose * 2], target: ~synthGrp);},
+								Synth("\resTuning_%".format(1),
+									[
+										\attack, ~attack, //1 + (4.0).rand,
+										\release, ~release, //1 + (15.0).rand,
+										\beating, 7,
+										\coef,  0.001,
+										\array, ~array,
+										\pan, ~pan,
+										\iteration,~iter
+									]
+									, target: ~synthGrp);},
 							/* Scene 5 */
 
 							5, {~loFreqEnergy.set(\detune, 0.8 + 0.4.rand, \maxSinFreq, 30 + 45.0.rand)};

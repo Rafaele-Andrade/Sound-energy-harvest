@@ -33,6 +33,25 @@ if (MIDIClient.sources.detect { |e| e.device.containsi("SSCOM") } != nil)
 	}, 7, 0, ~softStep);
 	MIDIFunc.noteOn({~sceneIndex = 3;
 
+		fork{
+			~attack = 20;
+			~release = 30;
+			~array = 133;
+			~iter = rrand(1,1.2) ;
+			30.wait;
+			~array = ~tuning[1].choose;
+			30.wait;
+			~array = ~tuning[0].choose;
+			~iter = rrand(1.2,1.4);
+			30.wait;
+			~array = ~tuning[2].choose;
+			~pan = 0.001;
+			30.wait;
+			~pan = rrand(0.01,0.1);
+			10.wait;
+			~pan = rrand(4,19);
+		};
+
 	}, 8, 0, ~softStep);
 
 	MIDIFunc.noteOn({
